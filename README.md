@@ -1,0 +1,84 @@
+EmoBridge Database System
+
+Backend Developer: Asayel
+
+=================================
+Tables
+=================================
+
+1. children
+   Stores child information.
+
+2. sessions
+   Stores therapy/game sessions.
+
+3. game_results
+   Stores game performance results.
+
+4. badges
+   Stores earned badges and rewards.
+
+=================================
+Main Functions
+=================================
+
+Children:
+- add_child()
+- search_child()
+- update_child_age()
+- delete_child()
+
+Sessions:
+- add_session()
+- search_session()
+- update_session_emotion()
+- delete_session()
+
+Game Results:
+- add_game_result()
+- search_game_result()
+- update_game_score()
+- delete_game_result()
+
+Badges:
+- add_badge()
+- search_badge()
+- delete_badge()
+
+=================================
+Statistics
+=================================
+
+- get_total_children()
+- get_total_sessions()
+- get_total_badges()
+- get_average_score()
+- get_most_common_emotion()
+
+=================================
+Reports
+=================================
+
+- child_report.py
+- progress_report.py
+- smart_report.py
+- dashboard_summary.py
+
+=================================
+Database
+=================================
+
+SQLite Database:
+emobridge.db
+
+=================================
+Project Features
+=================================
+
+- Child Management
+- Session Management
+- Game Results Tracking
+- Badge System
+- Statistics Dashboard
+- Search Functions
+- Reports Generation

@@ -2,9 +2,6 @@
 """
 EmoBridge - Master Integrated Core
 ════════════════════════════════════════════
-Created by: Integration Lead (Ali)
-Combines: Haider (PyQt5 UI) + Abd (Keras Emotion AI) + Asayel (SQLite DB)
-"""
 
 import sys
 import os

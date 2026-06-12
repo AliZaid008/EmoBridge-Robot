@@ -2,6 +2,7 @@
 """
 EmoBridge - Master Integrated Core
 ════════════════════════════════════════════
+"""
 
 import sys
 import os
@@ -217,7 +218,6 @@ class EmoBridgeApp(QMainWindow):
         global DOMINANT_EMOTION, FINAL_ENGAGEMENT
         DOMINANT_EMOTION = emotion
         FINAL_ENGAGEMENT = engagement
-        # تگدر هسة تخلي الواجهة مالت حيدر تتفاعل وياها (مثلا تطلع إيموجي يبتسم للطفل إذا هو فرحان)
 
     def closeEvent(self, event):
         # إغلاق الكاميرا والخيط بأمان عند قفل الروبوت

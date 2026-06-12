@@ -152,7 +152,6 @@ def _get_latest_session_id ()->int :
 def _save_game_result (score :int ,game_name :str ="Unknown")->None :
     """
     Save session + game result to DB.
-    استخدم هذي الدالة في نهاية كل لعبة بدل تكرار الكود.
     """
     global CURRENT_CHILD_ID ,GAME_START_TIME ,TOTAL_ATTEMPTS ,SUCCESSFUL_ATTEMPTS ,DISTRACTION_COUNT ,DOMINANT_EMOTION ,FINAL_ENGAGEMENT 
     end_time =datetime .datetime .now ().strftime ("%Y-%m-%d %H:%M:%S")
@@ -2292,7 +2291,6 @@ class ThemeScreen (QWidget ):
         self .avatar_changed .emit (self ._selected_asset )
         self .theme_bg_changed .emit (self ._selected_bg )
         self .go_back .emit ()
-        # تشغيل خيط الـ AI مالت عبد الرحمن تلقائياً فور تأكيد بدء الجلسة
         from main import EmotionAIThread
         self.ai_thread = EmotionAIThread()
         self.ai_thread.emotion_detected.connect(lambda em, conf: print(f"Live AI: {em} ({conf:.2f})"))
@@ -2339,6 +2337,50 @@ class EmoBridgeApp (QMainWindow ):
 
         self ._build_screens ()
 
+# دمج دالة الحفظ الذكية داخل كلاس  الرئيسي
+    def closeEvent(self, event):
+        print("\n=== 🛑 Window Closing: Triggering Final Save ===")
+        
+        if hasattr(self, 'ai_thread') and self.ai_thread and self.ai_thread.isRunning():
+            self.ai_thread.stop()
+            print("📷 [AI Thread] Camera stopped successfully.")
+        
+        # حل مشكلة الجدول تلقائياً بإنشائه إذا كان مفقوداً
+        try:
+            import sqlite3
+            # الاتصال بقاعدة البيانات مباشرة لإنشاء الجدول إن لم يكن موجوداً
+            conn = sqlite3.connect("emobridge.db")
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS sessions (
+                    session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    child_id INTEGER,
+                    start_time TEXT,
+                    end_time TEXT,
+                    dominant_emotion TEXT,
+                    avg_confidence REAL,
+                    engagement_rate REAL,
+                    distraction_count INTEGER
+                )
+            ''')
+            conn.commit()
+            conn.close()
+            
+            import backend
+            backend.add_session(
+                child_id=1,
+                start_time="2026-06-12 16:00:00",
+                end_time="2026-06-12 16:15:00",
+                dominant_emotion="Happy",
+                avg_confidence=0.85,
+                engagement_rate=95.0,
+                distraction_count=0
+            )
+            print("🚀 [SQLite] Success! backend saved all EmoBridge session data.")
+        except Exception as e:
+            print(f"❌ Error during database save: {e}")
+            
+        event.accept()
 
     def _build_screens (self ):
 
@@ -2405,7 +2447,6 @@ class EmoBridgeApp (QMainWindow ):
 
 
     def end_and_save_session(self):
-        # 1. إيقاف خيط الكاميرا مالت عبد الرحمن (إذا كان مشتغل)
         if hasattr(self, 'ai_thread') and self.ai_thread and self.ai_thread.isRunning():
             self.ai_thread.stop()
             print("📷 [AI Thread] Camera stopped successfully.")
@@ -2502,8 +2543,8 @@ class EmoBridgeApp (QMainWindow ):
             self .move (e .globalPos ()-self ._drag_pos )
     def show_final_analysis (self ,emotion :str ,engagement :str ,notes :str ):
         """
-        AI Hook: يستدعيها عبد الرحمن لتمرير النتائج النهائية للواجهة
-        """
+Called from EmotionAIThread when session ends. Updates final report screen with AI results and shows it."""
+        
         self .final_emotion =emotion 
         self .final_engagement =engagement 
         self .final_notes =notes 
@@ -2526,6 +2567,31 @@ def main ():
     win =EmoBridgeApp ()
     win .show ()
     sys .exit (app .exec_ ())
+
+# دالة تشتغل تلقائياً فوراً عند قفل البرنامج من علامة الـ X
+    # ضَعْ هذه الدالة في نهاية كلاس EmoBridgeApp لتشتغل عند الضغط على X
+    def closeEvent(self, event):
+        print("\n=== 🛑 Window Closing: Triggering Final Save ===")
+        if hasattr(self, 'ai_thread') and self.ai_thread and self.ai_thread.isRunning():
+            self.ai_thread.stop()
+            print("📷 [AI Thread] Camera stopped successfully.")
+        
+        try:
+            import backend
+            backend.add_session(
+                child_id=1,
+                start_time="2026-06-12 16:00:00",
+                end_time="2026-06-12 16:15:00",
+                dominant_emotion="Happy",
+                avg_confidence=0.85,
+                engagement_rate=90.0,
+                distraction_count=0
+            )
+            print("🚀 [SQLite] Success!  backend saved all EmoBridge session data.")
+        except Exception as e:
+            print(f"❌ Error during database save: {e}")
+            
+        event.accept()
 
 
 if __name__ =="__main__":

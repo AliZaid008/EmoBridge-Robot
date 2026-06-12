@@ -2568,31 +2568,5 @@ def main ():
     win .show ()
     sys .exit (app .exec_ ())
 
-# دالة تشتغل تلقائياً فوراً عند قفل البرنامج من علامة الـ X
-    # ضَعْ هذه الدالة في نهاية كلاس EmoBridgeApp لتشتغل عند الضغط على X
-    def closeEvent(self, event):
-        print("\n=== 🛑 Window Closing: Triggering Final Save ===")
-        if hasattr(self, 'ai_thread') and self.ai_thread and self.ai_thread.isRunning():
-            self.ai_thread.stop()
-            print("📷 [AI Thread] Camera stopped successfully.")
-        
-        try:
-            import backend
-            backend.add_session(
-                child_id=1,
-                start_time="2026-06-12 16:00:00",
-                end_time="2026-06-12 16:15:00",
-                dominant_emotion="Happy",
-                avg_confidence=0.85,
-                engagement_rate=90.0,
-                distraction_count=0
-            )
-            print("🚀 [SQLite] Success!  backend saved all EmoBridge session data.")
-        except Exception as e:
-            print(f"❌ Error during database save: {e}")
-            
-        event.accept()
-
-
 if __name__ =="__main__":
     main ()
